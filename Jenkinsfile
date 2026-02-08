@@ -6,7 +6,7 @@ pipeline {
         AWS_REGION = 'us-east-1'
         ECR_REGISTRY = credentials('ecr-registry')
         ECR_REPOSITORY = 'aws-training-ci-cd-project'
-        IMAGE_TAG = "${env.BUILD_NUMBER}"
+        IMAGE_TAG = "bigbadwolf-${env.BUILD_NUMBER}"
         
         // Docker Configuration
         DOCKER_IMAGE = "${ECR_REGISTRY}/${ECR_REPOSITORY}:${IMAGE_TAG}"
