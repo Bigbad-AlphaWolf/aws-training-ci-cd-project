@@ -37,11 +37,12 @@ pipeline {
                     echo 'Running tests...'
                     // Test if the image can be run
                     sh '''
-                        docker run -d --name test-container -p 8080:80 ${DOCKER_IMAGE}
+                        TEST_CONTAINER="test-container-${BUILD_NUMBER}"
+                        docker run -d --name ${TEST_CONTAINER} -p 8080:80 ${DOCKER_IMAGE}
                         sleep 5
                         curl -f http://localhost:8080 || exit 1
-                        docker stop test-container
-                        docker rm test-container
+                        docker stop ${TEST_CONTAINER}
+                        docker rm ${TEST_CONTAINER}
                     '''
                     echo 'Tests passed successfully'
                 }
@@ -99,8 +100,11 @@ pipeline {
             // You can add notification here (e.g., Slack, email)
         }
         always {
-            // Cleanup
-            sh 'docker system prune -f'
+            // Cleanup - remove only the images built in this pipeline
+            sh '''
+                docker rmi ${DOCKER_IMAGE} || true
+                docker rmi ${DOCKER_IMAGE_LATEST} || true
+            '''
         }
     }
 }
